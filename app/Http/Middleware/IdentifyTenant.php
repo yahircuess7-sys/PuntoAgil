@@ -23,10 +23,29 @@ class IdentifyTenant
         if (Auth::check()) {
             $user = Auth::user();
 
+            // Si la cuenta fue desactivada mientras tenía sesión abierta, revocar sesión inmediatamente
+            if ($user->status !== 'active') {
+                Auth::logout();
+                $this->tenantManager->clear();
+
+                if ($request->hasSession()) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                }
+
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Esta cuenta ha sido desactivada. Por favor, contacte al administrador.',
+                ]);
+            }
+
             // Si el usuario no tiene current_business_id asignado, resolvemos su empresa por defecto
             if (! $user->current_business_id) {
-                $membership = $user->businesses()->wherePivot('is_default', true)->first() 
+                $membership = $user->businesses()->wherePivot('is_default', true)->first()
                     ?: $user->businesses()->first();
+
+                if (! $membership && $user->isSuperAdmin()) {
+                    $membership = Business::where('status', 'active')->first();
+                }
 
                 if ($membership) {
                     $user->current_business_id = $membership->id;
@@ -34,21 +53,23 @@ class IdentifyTenant
                 }
             }
 
-            // Validar que el usuario realmente sea miembro de la empresa seleccionada
-            $isMember = $user->businesses()->where('businesses.id', $user->current_business_id)->exists();
-            if (! $isMember) {
-                $fallback = $user->businesses()->first();
-                if ($fallback) {
-                    $user->current_business_id = $fallback->id;
-                    $user->save();
-                } else {
-                    abort(403, 'Tu cuenta no tiene una empresa asignada o autorizada en PuntoÁgil.');
+            // Validar que el usuario realmente sea miembro de la empresa seleccionada (salvo Super Admin)
+            if (! $user->isSuperAdmin()) {
+                $isMember = $user->businesses()->where('businesses.id', $user->current_business_id)->exists();
+                if (! $isMember) {
+                    $fallback = $user->businesses()->first();
+                    if ($fallback) {
+                        $user->current_business_id = $fallback->id;
+                        $user->save();
+                    } else {
+                        abort(403, 'Tu cuenta no tiene una empresa asignada o autorizada en PuntoÁgil.');
+                    }
                 }
             }
 
             // Cargar el modelo del negocio y validar su estado
             $business = Business::find($user->current_business_id);
-            if (! $business || ! $business->isActive()) {
+            if (! $business || (! $business->isActive() && ! $user->isSuperAdmin())) {
                 abort(403, 'La empresa asociada a tu sesión se encuentra inactiva o suspendida.');
             }
 
@@ -57,7 +78,7 @@ class IdentifyTenant
 
             // Compartir la empresa y rol actual con todas las vistas Blade
             view()->share('currentBusiness', $business);
-            view()->share('currentBusinessUserRole', $user->roleInCurrentBusiness());
+            view()->share('currentBusinessUserRole', $user->roleLabel($business?->id));
         }
 
         return $next($request);

@@ -64,6 +64,22 @@ class Business extends Model
     }
 
     /**
+     * Invitaciones enviadas para unirse a la empresa.
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(BusinessInvitation::class);
+    }
+
+    /**
+     * Registros de auditoría asociados a la empresa.
+     */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
+    /**
      * Comprueba si la empresa se encuentra activa en la plataforma.
      */
     public function isActive(): bool

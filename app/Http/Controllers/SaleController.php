@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -16,17 +17,23 @@ class SaleController extends Controller
 {
     public function index()
     {
+        Gate::authorize('viewAny', Sale::class);
+
         $products = Product::where('stock', '>', 0)->get();
         return view('sales.index', compact('products'));
     }
 
     public function create()
     {
+        Gate::authorize('create', Sale::class);
+
         return $this->index();
     }
 
     public function store(StoreSaleRequest $request)
     {
+        Gate::authorize('create', Sale::class);
+
         $items = $request->validated()['items'];
 
         DB::beginTransaction();
@@ -82,12 +89,16 @@ class SaleController extends Controller
 
     public function show(Sale $sale)
     {
+        Gate::authorize('view', $sale);
+
         $sale->load(['items.product', 'user']);
         return view('sales.show', compact('sale'));
     }
 
     public function exportPdf(Sale $sale)
     {
+        Gate::authorize('view', $sale);
+
         $sale->load(['items.product', 'user']);
 
         $customerName = $this->normalizeText(request()->input('customer_name', 'Consumidor Final'));
@@ -124,6 +135,8 @@ class SaleController extends Controller
 
     public function reports()
     {
+        Gate::authorize('viewReports', Sale::class);
+
         $transactions = Sale::with('user')->withCount('items')->orderByDesc('created_at')->take(12)->get();
         $dailyTotal = Sale::whereDate('created_at', now())->sum('total');
         $invoicesCount = Sale::whereDate('created_at', now())->count();
@@ -134,6 +147,8 @@ class SaleController extends Controller
 
     public function exportReports()
     {
+        Gate::authorize('exportReports', Sale::class);
+
         $sales = Sale::with('user')->withCount('items')->orderByDesc('created_at')->get();
 
         $handle = fopen('php://temp', 'r+');

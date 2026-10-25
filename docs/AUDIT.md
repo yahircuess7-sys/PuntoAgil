@@ -211,4 +211,84 @@ Se diseñó e implementó la suite especializada `tests/Feature/MultiTenantIsola
 * `test_user_management_is_isolated_per_business`: **PASS** (Aislamiento completo de operadores entre empresas en módulo administrativo).
 * **Resultado Global de la Suite:** **13 tests aprobados, 51 aserciones exitosas (100% OK)**.
 
+---
+
+## 8. Autenticación Avanzada, OAuth 2.0 con Google y Control de Acceso Basado en Roles (RBAC)
+
+### 8.1 Fortalecimiento de Sesiones, Login, Recuperación y Verificación
+* **Rate Limiting Granular (`LoginController`):** Además del middleware `throttle:6,1`, se implementó limitación por combinación `email|ip` mediante `RateLimiter` (máximo 5 intentos fallidos por minuto), limpiando el contador tras un acceso válido.
+* **Revocación Inmediata de Sesiones Inactivas (`IdentifyTenant`):** Si un usuario autenticado es desactivado (`status = 'inactive'`) mientras mantiene una sesión abierta, el middleware cierra su sesión en la siguiente petición, limpia `TenantManager`, invalida la sesión y regenera el token CSRF.
+* **Recuperación de Contraseña (`PasswordResetController`):**
+  * Se corrigió en `config/auth.php` el nombre de la tabla de tokens a `password_reset_token` (alineado con la migración real existente en PostgreSQL).
+  * Rutas implementadas: `GET /forgot-password`, `POST /forgot-password`, `GET /reset-password/{token}` y `POST /reset-password` con vistas dedicadas (`auth/forgot-password.blade.php` y `auth/reset-password.blade.php`).
+* **Verificación de Correo (`EmailVerificationController`):**
+  * El modelo `User` implementa `MustVerifyEmail`. Las cuentas existentes fueron marcadas como verificadas en la migración `2026_10_24_000001_enhance_auth_and_rbac_columns_on_users_table.php` para evitar bloqueos operativos.
+  * Rutas implementadas: `/email/verify`, `/email/verify/{id}/{hash}` (con middleware `signed`) y `/email/verification-notification`.
+
+### 8.2 Autenticación con Google (OAuth 2.0 / OpenID Connect)
+* **Controlador:** `app/Http/Controllers/Auth/GoogleAuthController.php`.
+* **Comportamiento seguro sin simulación:**
+  * Si `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` no están definidos en el entorno, `GET /auth/google` **nunca simula un inicio de sesión**; redirige de forma segura a `/login` informando que el proveedor no está configurado.
+  * Cuando está configurado, soporta tanto `Laravel\Socialite` (si se instala el paquete) como el flujo estándar OAuth 2.0 / OpenID Connect de Google mediante `Illuminate\Support\Facades\Http`, validando estado criptográfico CSRF (`google_oauth_state`) en sesión, verificando `email_verified` y vinculando `google_id` y `avatar` únicamente a cuentas autorizadas y activas en PuntoÁgil.
+
+### 8.3 Jerarquía de 4 Niveles de Rol y Políticas de Autorización en Servidor
+Se implementaron Políticas de Eloquent (`ProductPolicy`, `SalePolicy`, `UserPolicy`, `BusinessPolicy`) y Gates en `AppServiceProvider`, aplicadas en el servidor mediante `Gate::authorize()` y `FormRequest::authorize()`:
+
+| Rol | Identificador | Alcance y Permisos en el Servidor |
+| :--- | :--- | :--- |
+| **Super Admin** | `super_admin` (`is_super_admin = true`) | Control global de plataforma (`Gate: manage-platform`), gestión multiempresa, acceso irrestricto a todos los módulos. |
+| **Propietario del Negocio** | `owner` | Control total de su empresa (`Gate: manage-business-settings`), creación/edición/eliminación de administradores (`admin`) y cajeros (`cajero`), gestión completa de inventario y reportes. No puede ser eliminado ni degradado por administradores regulares. |
+| **Administrador** | `admin` | Gestión operativa de la empresa: crear, editar y eliminar productos (`ProductPolicy`), ver y exportar reportes contables (`SalePolicy`), y gestionar únicamente usuarios con rol `cajero` (`UserPolicy`). Bloqueado con HTTP 403 si intenta crear/editar/eliminar a un `owner` o `super_admin`. |
+| **Cajero POS** | `cajero` | Operación de caja rápida (`pos.create`, `sales.store`, `sales.index`, `sales.show`, `sales.pdf`) y **solo lectura** en inventario (`inventory.index`, `inventory.show`). Bloqueado en el servidor con **HTTP 403** ante cualquier intento de crear, editar o eliminar productos, o acceder a usuarios y reportes. |
+
+### 8.4 Configuraciones Externas Pendientes (Variables de Entorno)
+Para habilitar en producción el inicio de sesión con Google y el envío real de correos electrónicos (recuperación de clave y verificación), el administrador de infraestructura debe definir en `.env`:
+```env
+GOOGLE_CLIENT_ID="su-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="su-client-secret"
+GOOGLE_REDIRECT_URI="https://su-dominio.com/auth/google/callback"
+
+MAIL_MAILER="smtp"
+MAIL_HOST="smtp.proveedor.com"
+MAIL_PORT=587
+MAIL_USERNAME="usuario-smtp"
+MAIL_PASSWORD="password-smtp"
+MAIL_FROM_ADDRESS="no-reply@puntoagil.com"
+MAIL_FROM_NAME="PuntoÁgil SaaS"
+```
+*(Documentadas como plantilla sin secretos en `.env.example` y registradas en `config/services.php`)*.
+
+---
+
+## 9. Gestión de Negocios, Membresías de Usuarios, Invitaciones y Auditoría Protegida
+
+### 9.1 Esquema de Datos Incremental (`2026_10_24_000002_add_last_login_invitations_and_audit_logs.php`)
+* **Trazabilidad de Último Acceso en `users`:**
+  * Se añadieron las columnas `last_login_at` (`TIMESTAMP NULL`) y `last_login_ip` (`VARCHAR(45) NULL`), actualizadas automáticamente en `LoginController` y `GoogleAuthController`.
+* **Invitaciones por Negocio (`business_invitations`):**
+  * Tabla para invitar miembros a un negocio con rol asignado (`owner`, `admin`, `cajero`), token único criptográfico (`token`), estado (`pending`, `accepted`, `revoked`, `expired`) y fecha de expiración (`expires_at`).
+* **Bitácora de Auditoría Protegida (`audit_logs`):**
+  * Tabla inmutable (solo inserción y lectura mediante `AuditLogger::record`) que almacena `business_id`, `user_id`, `action`, `target_type`, `target_id`, `description`, `metadata` (JSON con sanitización automática de secretos), `ip_address`, `user_agent` y `created_at`.
+
+### 9.2 Gestión de Negocios y Separación Super Admin vs. Owner
+* **Configuración del Negocio Activo (`BusinessController@settings` / `updateSettings`):**
+  * Protegido por `Gate::authorize('manage-business-settings')`. Exclusivo para el **Owner** del negocio activo (y **Super Admin**). Permite configurar nombre comercial, RFC/NIT (`tax_id`), correo, teléfono y dirección fiscal.
+* **Cambio de Contexto Multiempresa (`BusinessController@switchBusiness`):**
+  * Permite a usuarios autorizados en múltiples negocios alternar su empresa activa (`POST /business/switch`), validando membresía activa en el servidor antes de cambiar `current_business_id`.
+* **Administración Global de Empresas (`BusinessController@index`, `create`, `store`, `toggleStatus`):**
+  * Separada bajo `/admin/businesses` y protegida por `Gate::authorize('manage-platform')` (exclusivo **Super Admin**). Permite listar todos los negocios del SaaS, registrar nuevas empresas asignando su propietario (`owner`), y suspender o reactivar la operación de cualquier tenant con confirmación modal.
+
+### 9.3 Gestión de Usuarios, Estados de Cuenta, Invitaciones y Revocación
+* **Jerarquía Estricta contra Escalación de Privilegios (`UserController` & `UserPolicy`):**
+  * **Owner:** Puede crear, invitar, editar, activar/desactivar y revocar acceso a miembros con rol `admin` y `cajero` dentro de su negocio.
+  * **Admin:** Solo puede crear, invitar, editar, activar/desactivar y revocar cuentas con rol `cajero` de su negocio. Cualquier petición manipulada para asignar rol `admin`, `owner` o `super_admin`, o para modificar/desactivar a un `Owner` u otro `Admin`, es rechazada en el servidor con **HTTP 403**.
+  * **Autoprotección:** Ningún usuario puede desactivar su propia cuenta ni revocar su propio acceso.
+* **Sistema de Invitaciones (`UserController@invite` & `InvitationController`):**
+  * Si el servidor tiene configurado un transporte SMTP real (`MAIL_MAILER` distinto de `log`/`array`), envía el correo con el enlace de invitación `/invitations/{token}`.
+  * En entorno local (`MAIL_MAILER=log`), registra la invitación y muestra el enlace directo en la interfaz para que pueda probarse localmente sin inventar servicios de correo externos.
+* **Confirmaciones para Operaciones Delicadas:**
+  * En `resources/views/admin/users.blade.php` y `resources/views/admin/businesses/index.blade.php`, activar/desactivar cuentas, revocar accesos de miembros y suspender empresas requieren confirmación explícita mediante modales interactivos en Alpine.js.
+
+
+
 

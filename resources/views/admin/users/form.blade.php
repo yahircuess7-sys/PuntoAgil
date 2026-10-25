@@ -96,15 +96,30 @@
                     Rol Operativo <span class="text-rose-500">*</span>
                 </label>
                 <div class="relative">
+                    @php
+                        $selectedRole = old('role', isset($user) ? $user->roleInBusiness(auth()->user()->current_business_id) : 'cajero');
+                    @endphp
                     <select name="role"
                             id="role"
                             required
                             class="w-full px-3.5 py-2.5 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
-                        <option value="admin" {{ old('role', $user->role ?? '') === 'admin' ? 'selected' : '' }}>
-                            👑 Administrador (Acceso total al sistema)
-                        </option>
-                        <option value="cajero" {{ old('role', $user->role ?? '') === 'cajero' ? 'selected' : '' }}>
-                            ⚡ Cajero POS (Punto de venta y facturación)
+                        @can('assignRole', [\App\Models\User::class, 'super_admin'])
+                            <option value="super_admin" {{ $selectedRole === 'super_admin' ? 'selected' : '' }}>
+                                ✨ Super Admin (Control global de plataforma)
+                            </option>
+                        @endcan
+                        @can('assignRole', [\App\Models\User::class, 'owner'])
+                            <option value="owner" {{ $selectedRole === 'owner' ? 'selected' : '' }}>
+                                🏆 Propietario (Control total de la empresa)
+                            </option>
+                        @endcan
+                        @can('assignRole', [\App\Models\User::class, 'admin'])
+                            <option value="admin" {{ $selectedRole === 'admin' ? 'selected' : '' }}>
+                                👑 Administrador (Inventario, reportes y cajeros)
+                            </option>
+                        @endcan
+                        <option value="cajero" {{ $selectedRole === 'cajero' ? 'selected' : '' }}>
+                            ⚡ Cajero POS (Punto de venta y consulta de stock)
                         </option>
                     </select>
                     <i class="bi bi-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>

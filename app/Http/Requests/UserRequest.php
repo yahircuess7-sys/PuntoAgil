@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,7 +13,33 @@ class UserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $actor = $this->user();
+        if (! $actor) {
+            return false;
+        }
+
+        $requestedRole = (string) $this->input('role', User::ROLE_CASHIER);
+
+        if ($this->isMethod('POST')) {
+            return $actor->can('create', User::class)
+                && $actor->can('assignRole', [User::class, $requestedRole]);
+        }
+
+        $target = $this->route('user');
+        if ($target instanceof User) {
+            if (! $actor->can('update', $target)) {
+                return false;
+            }
+
+            $currentRole = $target->roleInBusiness($actor->current_business_id);
+            if ($requestedRole !== $currentRole && $requestedRole !== $target->role) {
+                return $actor->can('assignRole', [User::class, $requestedRole]);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -33,7 +60,7 @@ class UserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
-            'role' => ['required', 'in:admin,cajero'],
+            'role' => ['required', 'in:super_admin,owner,admin,cajero'],
             'status' => ['required', 'in:active,inactive'],
         ];
 

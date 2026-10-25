@@ -9,6 +9,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -18,6 +19,8 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Product::class);
+
         $query = Product::query();
 
         if ($search = $request->input('search')) {
@@ -49,11 +52,15 @@ class ProductController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', Product::class);
+
         return view('inventory.form');
     }
 
     public function store(ProductRequest $request)
     {
+        Gate::authorize('create', Product::class);
+
         $validatedData = $request->validated();
         $validatedData['sku'] = $this->skuService->resolveSku(
             $validatedData['sku'] ?? null,
@@ -77,16 +84,22 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        Gate::authorize('view', $product);
+
         return view('inventory.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
+        Gate::authorize('update', $product);
+
         return view('inventory.form', compact('product'));
     }
 
     public function update(ProductRequest $request, Product $product)
     {
+        Gate::authorize('update', $product);
+
         $validatedData = $request->validated();
         $validatedData['sku'] = $this->skuService->resolveSku(
             $validatedData['sku'] ?? null,
@@ -111,6 +124,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        Gate::authorize('delete', $product);
+
         if ($product->saleItems()->exists()) {
             return redirect()->route('inventory.index')
                 ->with('error', 'No se puede eliminar este producto porque tiene ventas asociadas.');
@@ -123,6 +138,8 @@ class ProductController extends Controller
 
     public function exportPdf()
     {
+        Gate::authorize('export', Product::class);
+
         $products = Product::orderBy('category')->get()->map(function (Product $product) {
             return [
                 'sku' => $this->sanitizePdfValue($product->sku),
@@ -159,6 +176,8 @@ class ProductController extends Controller
 
     public function exportCsv()
     {
+        Gate::authorize('export', Product::class);
+
         $products = Product::orderBy('category')->orderBy('name')->get();
         $handle = fopen('php://temp', 'r+');
 

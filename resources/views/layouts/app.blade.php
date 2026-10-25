@@ -226,7 +226,7 @@
                 </nav>
             </div>
 
-            <!-- Administración (Solo con rol admin o propietario de la empresa) -->
+            <!-- Administración (Solo con rol admin, propietario o super admin) -->
             @if(auth()->user() && auth()->user()->isAdmin())
             <div>
                 <p class="px-3 mb-2 text-[11px] font-semibold tracking-wider uppercase text-slate-300 font-mono">Administración</p>
@@ -242,9 +242,39 @@
                         <i class="bi bi-graph-up-arrows text-base {{ request()->routeIs('reports.*') ? 'text-emerald-400' : 'text-slate-400' }}"></i>
                         <span>Reportes Contables</span>
                     </a>
+
+                    @can('manage-business-settings')
+                    <a href="{{ route('admin.business.settings') }}" 
+                       class="nav-link-anim flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('admin.business.*') ? 'bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/30 shadow-sm shadow-emerald-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <i class="bi bi-building-gear text-base {{ request()->routeIs('admin.business.*') ? 'text-emerald-400' : 'text-slate-400' }}"></i>
+                        <span>Configurar Empresa</span>
+                    </a>
+                    @endcan
+
+                    @can('view-audit-logs')
+                    <a href="{{ route('admin.audit.index') }}" 
+                       class="nav-link-anim flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('admin.audit.*') ? 'bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/30 shadow-sm shadow-emerald-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <i class="bi bi-shield-check text-base {{ request()->routeIs('admin.audit.*') ? 'text-emerald-400' : 'text-slate-400' }}"></i>
+                        <span>Auditoría Protegida</span>
+                    </a>
+                    @endcan
                 </nav>
             </div>
             @endif
+
+            <!-- Administración Global Separada (Exclusivo Super Admin) -->
+            @can('manage-platform')
+            <div>
+                <p class="px-3 mb-2 text-[11px] font-semibold tracking-wider uppercase text-amber-400 font-mono">Super Admin Global</p>
+                <nav class="space-y-1">
+                    <a href="{{ route('admin.businesses.index') }}" 
+                       class="nav-link-anim flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('admin.businesses.*') ? 'bg-amber-500/15 text-amber-400 font-semibold border border-amber-500/30 shadow-sm' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <i class="bi bi-buildings text-base {{ request()->routeIs('admin.businesses.*') ? 'text-amber-400' : 'text-slate-400' }}"></i>
+                        <span>Empresas (Tenants)</span>
+                    </a>
+                </nav>
+            </div>
+            @endcan
 
             <!-- Sistema -->
             <div>
@@ -300,7 +330,25 @@
                         Sistema Online
                     </span>
                     <span class="text-slate-300">/</span>
-                    <span class="text-slate-700 font-semibold truncate max-w-[200px]">{{ $currentBusiness->name ?? 'PuntoÁgil Central' }}</span>
+                    @php
+                        $userActiveBusinesses = auth()->check()
+                            ? auth()->user()->businesses()->where('businesses.status', 'active')->get()
+                            : collect();
+                    @endphp
+                    @if($userActiveBusinesses->count() > 1)
+                        <form action="{{ route('business.switch') }}" method="POST" class="inline-flex items-center">
+                            @csrf
+                            <select name="business_id" onchange="this.form.submit()" class="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/70 border border-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 cursor-pointer">
+                                @foreach($userActiveBusinesses as $ub)
+                                    <option value="{{ $ub->id }}" {{ (int) ($currentBusiness->id ?? auth()->user()->currentBusinessId()) === (int) $ub->id ? 'selected' : '' }}>
+                                        {{ $ub->name }} ({{ strtoupper($ub->pivot->role) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @else
+                        <span class="text-slate-700 font-semibold truncate max-w-[200px]">{{ $currentBusiness->name ?? 'PuntoÁgil Central' }}</span>
+                    @endif
                 </div>
             </div>
 

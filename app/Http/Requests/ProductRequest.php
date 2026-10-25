@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use App\Services\TenantManager;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -13,7 +14,17 @@ class ProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        if (! $user) {
+            return false;
+        }
+
+        $product = $this->route('product');
+        if ($product instanceof Product) {
+            return $user->can('update', $product);
+        }
+
+        return $user->can('create', Product::class);
     }
 
     /**

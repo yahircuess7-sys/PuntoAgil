@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Sale;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSaleRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreSaleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create', Sale::class);
     }
 
     /**

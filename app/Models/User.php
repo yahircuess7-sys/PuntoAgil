@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\TenantManager;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,9 +11,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
+
+    public const ROLE_SUPER_ADMIN = 'super_admin';
+    public const ROLE_OWNER = 'owner';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_CASHIER = 'cajero';
 
     /**
      * The attributes that are mass assignable.
@@ -22,10 +28,16 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'google_id',
+        'avatar',
         'password',
         'role',
+        'is_super_admin',
         'status',
         'current_business_id',
+        'email_verified_at',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -47,7 +59,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'is_super_admin' => 'boolean',
         ];
     }
 
@@ -70,23 +84,83 @@ class User extends Authenticatable
     }
 
     /**
-     * Obtiene el rol del usuario en su empresa activa ('owner', 'admin', 'cajero').
+     * Retorna el ID del negocio activo del usuario o el contexto en TenantManager.
      */
-    public function roleInCurrentBusiness(): string
+    public function currentBusinessId(): ?int
     {
+        return $this->current_business_id
+            ? (int) $this->current_business_id
+            : app(TenantManager::class)->getTenantId();
+    }
+
+    /**
+     * Verifica si el usuario pertenece a un negocio específico.
+     */
+    public function belongsToBusiness(?int $businessId): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        if (! $businessId) {
+            return false;
+        }
+
         if ($this->relationLoaded('businesses')) {
-            $currentPivot = $this->businesses->firstWhere('id', $this->current_business_id);
-            if ($currentPivot && $currentPivot->pivot) {
-                return (string) $currentPivot->pivot->role;
+            return $this->businesses->contains('id', $businessId);
+        }
+
+        return $this->businesses()->where('businesses.id', $businessId)->exists();
+    }
+
+    /**
+     * Obtiene el rol efectivo del usuario en una empresa específica o en la empresa activa.
+     * Posibles valores: 'super_admin', 'owner', 'admin', 'cajero'.
+     */
+    public function roleInBusiness(?int $businessId = null): string
+    {
+        if ($this->isSuperAdmin()) {
+            return self::ROLE_SUPER_ADMIN;
+        }
+
+        $targetBusinessId = $businessId ?: ($this->current_business_id ?: app(TenantManager::class)->getTenantId());
+
+        if ($targetBusinessId) {
+            if ($this->relationLoaded('businesses')) {
+                $currentPivot = $this->businesses->firstWhere('id', $targetBusinessId);
+                if ($currentPivot && $currentPivot->pivot && ! empty($currentPivot->pivot->role)) {
+                    return (string) $currentPivot->pivot->role;
+                }
+            }
+
+            $pivot = $this->businesses()->where('businesses.id', $targetBusinessId)->first();
+            if ($pivot && $pivot->pivot && ! empty($pivot->pivot->role)) {
+                return (string) $pivot->pivot->role;
             }
         }
 
-        $pivot = $this->businesses()->where('business_id', $this->current_business_id)->first();
-        if ($pivot && $pivot->pivot) {
-            return (string) $pivot->pivot->role;
-        }
+        return $this->role ?: self::ROLE_CASHIER;
+    }
 
-        return $this->role ?: 'cajero';
+    /**
+     * Obtiene el rol del usuario en su empresa activa ('super_admin', 'owner', 'admin', 'cajero').
+     */
+    public function roleInCurrentBusiness(): string
+    {
+        return $this->roleInBusiness($this->current_business_id);
+    }
+
+    /**
+     * Etiqueta legible del rol actual.
+     */
+    public function roleLabel(?int $businessId = null): string
+    {
+        return match ($this->roleInBusiness($businessId)) {
+            self::ROLE_SUPER_ADMIN => 'Super Admin',
+            self::ROLE_OWNER => 'Propietario',
+            self::ROLE_ADMIN => 'Administrador',
+            default => 'Cajero',
+        };
     }
 
     /**
@@ -98,10 +172,45 @@ class User extends Authenticatable
     }
 
     /**
-     * Verifica si el usuario posee rol administrativo en la empresa o sistema.
+     * Verifica si el usuario es Super Administrador global de la plataforma.
      */
-    public function isAdmin(): bool
+    public function isSuperAdmin(): bool
     {
-        return $this->role === 'admin' || in_array($this->roleInCurrentBusiness(), ['owner', 'admin'], true);
+        return (bool) $this->is_super_admin || $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    /**
+     * Verifica si el usuario es Propietario del negocio activo (o Super Admin).
+     */
+    public function isOwner(?int $businessId = null): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->roleInBusiness($businessId) === self::ROLE_OWNER;
+    }
+
+    /**
+     * Verifica si el usuario posee permisos administrativos (Super Admin, Propietario o Administrador).
+     */
+    public function isAdmin(?int $businessId = null): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        $effectiveRole = $this->roleInBusiness($businessId);
+
+        return in_array($effectiveRole, [self::ROLE_SUPER_ADMIN, self::ROLE_OWNER, self::ROLE_ADMIN], true)
+            || in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_OWNER, self::ROLE_ADMIN], true);
+    }
+
+    /**
+     * Verifica si el usuario tiene rol exclusivo de Cajero en el negocio.
+     */
+    public function isCashier(?int $businessId = null): bool
+    {
+        return ! $this->isAdmin($businessId);
     }
 }

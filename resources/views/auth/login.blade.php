@@ -117,6 +117,14 @@
 
         <!-- Card Container -->
         <div class="animate-scale-in bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-200/50 p-6 sm:p-8">
+            <!-- Session Status Alert (Password Reset / Info) -->
+            @if(session('status'))
+                <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2.5">
+                    <i class="bi bi-check-circle-fill text-sm shrink-0 mt-0.5 text-emerald-600"></i>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+
             <!-- Session Error Alert -->
             @if(session('error'))
                 <div class="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-2.5">
@@ -165,7 +173,9 @@
                         <label for="password" class="block text-xs font-semibold text-slate-700">
                             Contraseña
                         </label>
-                        <span class="text-[11px] text-slate-400">8+ caracteres</span>
+                        <a href="{{ route('password.request') }}" class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                            ¿Olvidaste tu contraseña?
+                        </a>
                     </div>
                     <div class="relative">
                         <i class="bi bi-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -196,6 +206,15 @@
                     <span>Ingresar al Sistema</span>
                 </button>
             </form>
+
+            <!-- Google OAuth 2.0 Integration -->
+            <div class="mt-4">
+                <a href="{{ route('auth.google') }}"
+                   class="w-full inline-flex items-center justify-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all active:scale-[0.98]">
+                    <i class="bi bi-google text-sm text-rose-500"></i>
+                    <span>Continuar con Google</span>
+                </a>
+            </div>
 
             <!-- Quick Credentials Helper for Demo/Audit -->
             <div class="mt-6 pt-5 border-t border-slate-100">

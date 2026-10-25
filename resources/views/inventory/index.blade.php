@@ -34,11 +34,13 @@
                 <span>Exportar CSV</span>
             </a>
 
+            @can('create', \App\Models\Product::class)
             <a href="{{ route('inventory.create') }}" 
                class="btn-shine inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 shadow-sm shadow-emerald-500/25 transition-all active:scale-95">
                 <i class="bi bi-plus-lg"></i>
                 <span>Nuevo Producto</span>
             </a>
+            @endcan
         </div>
     </div>
 
@@ -180,18 +182,22 @@
                                     <i class="bi bi-eye"></i>
                                 </a>
 
+                                @can('update', $product)
                                 <a href="{{ route('inventory.edit', $product->id) }}" 
                                    class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" 
                                    title="Editar Producto">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                @endcan
 
+                                @can('delete', $product)
                                 <button type="button" 
                                         @click="confirmDelete('{{ route('inventory.destroy', $product->id) }}', '{{ addslashes($product->name) }}')"
                                         class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" 
                                         title="Eliminar Producto">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                @endcan
                             </div>
                         </td>
                     </tr>
