@@ -15,11 +15,11 @@
             <i class="bi bi-info-circle-fill text-amber-600 text-sm"></i>
             <span><strong>Control Operativo (C$):</strong> Comprobantes para control administrativo interno sin validez fiscal DGI. Escáner de código de barras activo automáticamente.</span>
         </div>
-        <div class="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-amber-900">
-            <span class="px-2 py-0.5 rounded bg-white border border-amber-200 font-bold">F2 Buscar</span>
-            <span class="px-2 py-0.5 rounded bg-white border border-amber-200 font-bold">Enter Agregar Código</span>
-            <span class="px-2 py-0.5 rounded bg-white border border-amber-200 font-bold">F4 / Espacio Cobrar</span>
-            <span class="px-2 py-0.5 rounded bg-white border border-amber-200 font-bold">Esc Limpiar / Cerrar</span>
+        <div class="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-stone-800">
+            <span class="pa-keycap px-2 py-0.5 rounded bg-white font-bold">F2 Buscar</span>
+            <span class="pa-keycap px-2 py-0.5 rounded bg-white font-bold">Enter Agregar Código</span>
+            <span class="pa-keycap px-2 py-0.5 rounded bg-white font-bold">F4 / Espacio Cobrar</span>
+            <span class="pa-keycap px-2 py-0.5 rounded bg-white font-bold">Esc Limpiar / Cerrar</span>
         </div>
     </div>
 
@@ -110,14 +110,14 @@
             </div>
         </div>
 
-        <!-- Right Panel: Cart & Payment Checkout (5 cols) -->
+        <!-- Right Panel: Cart & Payment Checkout (5 cols - Original Layout with Warm Paper & Forest Pine Tonalities) -->
         <div class="animate-fade-up stagger-2 lg:col-span-5 xl:col-span-4 sticky top-16 space-y-3">
-            <div class="rounded-3xl bg-white border border-slate-200/80 shadow-floating overflow-hidden flex flex-col">
+            <div class="rounded-3xl bg-[#FDFCF9] border border-slate-200/90 shadow-floating overflow-hidden flex flex-col">
 
                 <!-- Ticket Header -->
-                <div class="px-4 py-3.5 bg-[#0f172a] text-white flex items-center justify-between">
+                <div class="px-4 py-3.5 bg-[#111315] text-white flex items-center justify-between border-b border-slate-800">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-600 text-emerald-300 border border-emerald-400/25 flex items-center justify-center">
                             <i class="bi bi-receipt text-base"></i>
                         </div>
                         <div>
@@ -137,7 +137,7 @@
                             <i class="bi bi-person-fill text-slate-400"></i>
                             <span>Cliente Destinatario</span>
                         </label>
-                        <a href="{{ route('customers.create') }}" target="_blank" class="text-emerald-600 hover:underline lowercase text-[11px] font-medium">
+                        <a href="{{ route('customers.create') }}" target="_blank" class="text-emerald-600 hover:underline lowercase text-[11px] font-bold">
                             + registrar
                         </a>
                     </div>
@@ -173,7 +173,7 @@
                 </div>
 
                 <!-- Cart Items List -->
-                <div class="p-3.5 flex-1 min-h-[150px] max-h-[230px] overflow-y-auto">
+                <div class="p-3.5 flex-1 min-h-[150px] max-h-[230px] overflow-y-auto bg-[#FDFCF9]">
                     <div id="cartItemsContainer" class="space-y-1.5">
                         <div id="emptyCartMessage" class="py-8 text-center text-slate-400 space-y-1.5">
                             <i class="bi bi-upc-scan text-2xl opacity-60"></i>
@@ -188,15 +188,15 @@
                     <div class="space-y-1">
                         <span class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider">Método de Pago</span>
                         <div class="grid grid-cols-3 gap-1.5 text-xs">
-                            <button type="button" onclick="setPaymentMethod('cash')" id="btnMethodCash" class="pay-method-btn active py-2 px-2 rounded-xl border border-emerald-500 bg-emerald-50 font-bold text-emerald-900 flex flex-col items-center gap-0.5">
+                            <button type="button" onclick="setPaymentMethod('cash')" id="btnMethodCash" class="pay-method-btn pa-keycap active py-2 px-2 rounded-xl border border-emerald-500 bg-emerald-50 font-bold text-emerald-900 flex flex-col items-center gap-0.5">
                                 <i class="bi bi-cash-stack text-sm text-emerald-600"></i>
                                 <span>Efectivo</span>
                             </button>
-                            <button type="button" onclick="setPaymentMethod('card')" id="btnMethodCard" class="pay-method-btn py-2 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold text-slate-700 flex flex-col items-center gap-0.5">
+                            <button type="button" onclick="setPaymentMethod('card')" id="btnMethodCard" class="pay-method-btn pa-keycap py-2 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold text-slate-700 flex flex-col items-center gap-0.5">
                                 <i class="bi bi-credit-card text-sm text-slate-500"></i>
                                 <span>Tarjeta</span>
                             </button>
-                            <button type="button" onclick="setPaymentMethod('transfer')" id="btnMethodTransfer" class="pay-method-btn py-2 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold text-slate-700 flex flex-col items-center gap-0.5">
+                            <button type="button" onclick="setPaymentMethod('transfer')" id="btnMethodTransfer" class="pay-method-btn pa-keycap py-2 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold text-slate-700 flex flex-col items-center gap-0.5">
                                 <i class="bi bi-arrow-left-right text-sm text-slate-500"></i>
                                 <span>Transfer.</span>
                             </button>
@@ -208,12 +208,12 @@
                         <div>
                             <label for="sale_discount" class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Descuento (C$)</label>
                             <input type="number" step="0.01" min="0" id="sale_discount" value="0.00" oninput="onDiscountInput()"
-                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-mono text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-mono tabular-nums text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
                         </div>
                         <div id="cashPaidWrapper">
                             <label for="sale_paid_amount" class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Efectivo Recibido (C$)</label>
                             <input type="number" step="0.01" min="0" id="sale_paid_amount" value="0.00" oninput="onManualPaidInput()"
-                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-mono text-xs font-bold text-emerald-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                                   class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-mono tabular-nums text-xs font-bold text-emerald-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
                         </div>
                     </div>
 
@@ -222,24 +222,24 @@
                         <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cobro Rápido en Efectivo</span>
                         <div class="grid grid-cols-5 gap-1 text-[11px] font-mono font-bold">
                             <button type="button" onclick="setExactCash()"
-                                    class="py-1.5 px-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-2xs"
+                                    class="pa-keycap py-1.5 px-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
                                     title="Pagar monto exacto sin vuelto">
                                 Exacto
                             </button>
                             <button type="button" onclick="setQuickBill(100)"
-                                    class="py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
+                                    class="pa-keycap py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
                                 C$100
                             </button>
                             <button type="button" onclick="setQuickBill(200)"
-                                    class="py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
+                                    class="pa-keycap py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
                                 C$200
                             </button>
                             <button type="button" onclick="setQuickBill(500)"
-                                    class="py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
+                                    class="pa-keycap py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
                                 C$500
                             </button>
                             <button type="button" onclick="setQuickBill(1000)"
-                                    class="py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
+                                    class="pa-keycap py-1.5 px-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 transition-colors">
                                 C$1000
                             </button>
                         </div>
@@ -247,29 +247,29 @@
                 </div>
 
                 <!-- Financial Calculation Summary -->
-                <div class="p-4 border-t border-slate-200/80 bg-white space-y-1.5 text-xs">
+                <div class="p-4 border-t border-slate-200/80 bg-[#FDFCF9] space-y-1.5 text-xs">
                     <div class="flex items-center justify-between text-slate-500">
                         <span>Subtotal:</span>
-                        <span class="font-mono font-semibold text-slate-700" id="val_subtotal">C$ 0.00</span>
+                        <span class="font-mono tabular-nums font-semibold text-slate-700" id="val_subtotal">C$ 0.00</span>
                     </div>
                     <div class="flex items-center justify-between text-slate-500" id="row_discount" style="display: none;">
                         <span>Descuento aplicado:</span>
-                        <span class="font-mono font-semibold text-rose-600" id="val_discount">-C$ 0.00</span>
+                        <span class="font-mono tabular-nums font-semibold text-rose-600" id="val_discount">-C$ 0.00</span>
                     </div>
                     <div class="flex items-center justify-between text-slate-500">
                         <span>IVA ({{ $posEffectiveTaxPercentage }}%):</span>
-                        <span class="font-mono font-semibold text-slate-700" id="val_tax">C$ 0.00</span>
+                        <span class="font-mono tabular-nums font-semibold text-slate-700" id="val_tax">C$ 0.00</span>
                     </div>
 
                     <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-sm font-bold text-slate-900 uppercase">Total a Cobrar:</span>
-                        <span class="text-2xl font-extrabold font-mono text-emerald-600" id="val_total">C$ 0.00</span>
+                        <span class="text-2xl font-extrabold font-mono tabular-nums text-emerald-600" id="val_total">C$ 0.00</span>
                     </div>
 
                     <!-- Cambio / Vuelto -->
                     <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200" id="row_change">
                         <span class="text-xs font-bold text-slate-700" id="lbl_change">Cambio / Vuelto:</span>
-                        <span class="font-mono font-extrabold text-sm text-slate-900" id="val_change">C$ 0.00</span>
+                        <span class="font-mono tabular-nums font-extrabold text-sm text-slate-900" id="val_change">C$ 0.00</span>
                     </div>
 
                     <!-- Inline Error Banner (Non-blocking) -->
@@ -283,8 +283,8 @@
                             id="submitSaleButton"
                             onclick="submitSale()"
                             disabled
-                            class="btn-shine w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-500/20 transition-all active:scale-98">
-                        <i class="bi bi-check2-circle text-lg"></i>
+                            class="btn-shine pa-keycap w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-900/15 transition-all active:scale-98">
+                        <i class="bi bi-check2-circle text-lg text-emerald-300"></i>
                         <span id="submitSaleLabel">COBRAR Y REGISTRAR VENTA [F4]</span>
                     </button>
                 </div>

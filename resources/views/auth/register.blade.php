@@ -6,9 +6,49 @@
     <title>Registrar Negocio - PuntoÁgil SaaS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            50: '#F6F5F0',
+                            100: '#EFECE4',
+                            200: '#E2DFD5',
+                            300: '#CFCBC0',
+                            400: '#8C887E',
+                            500: '#635F56',
+                            600: '#47443D',
+                            700: '#2E2C27',
+                            800: '#1C1F21',
+                            900: '#111315',
+                            950: '#0A0C0D',
+                        },
+                        emerald: {
+                            50: '#EEF5F1',
+                            100: '#D6E8DF',
+                            200: '#B0D4C2',
+                            300: '#6EC29E',
+                            400: '#34B382',
+                            500: '#14533E',
+                            600: '#0F3D2E',
+                            700: '#0B2E22',
+                            800: '#09251B',
+                            900: '#071C15',
+                            950: '#04100C',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="min-h-full flex items-center justify-center p-4 sm:p-6 text-slate-800 font-sans antialiased selection:bg-emerald-500 selection:text-white">
 

@@ -4,38 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - PuntoÁgil SaaS</title>
-    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN with Warm Paper, Forest Pine & Carbon Ink Tonalities -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            200: '#a7f3d0',
-                            500: '#10B981',
-                            600: '#059669',
-                            700: '#047857',
-                            900: '#064e3b',
-                        },
                         slate: {
-                            900: '#0F172A',
-                            950: '#020617',
+                            50: '#F6F5F0',
+                            100: '#EFECE4',
+                            200: '#E2DFD5',
+                            300: '#CFCBC0',
+                            400: '#8C887E',
+                            500: '#635F56',
+                            600: '#47443D',
+                            700: '#2E2C27',
+                            800: '#1C1F21',
+                            900: '#111315',
+                            950: '#0A0C0D',
+                        },
+                        emerald: {
+                            50: '#EEF5F1',
+                            100: '#D6E8DF',
+                            200: '#B0D4C2',
+                            300: '#6EC29E',
+                            400: '#34B382',
+                            500: '#14533E',
+                            600: '#0F3D2E',
+                            700: '#0B2E22',
+                            800: '#09251B',
+                            900: '#071C15',
+                            950: '#04100C',
+                        },
+                        brand: {
+                            50: '#EEF5F1',
+                            100: '#D6E8DF',
+                            200: '#B0D4C2',
+                            500: '#14533E',
+                            600: '#0F3D2E',
+                            700: '#0B2E22',
+                            900: '#071C15',
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
                     }
                 }
             }

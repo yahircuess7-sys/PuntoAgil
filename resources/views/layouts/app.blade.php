@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-50">
+<html lang="es" class="h-full bg-[#F6F5F0]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,41 +7,71 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'PuntoÁgil') - Sistema de Gestión y POS</title>
 
-    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <!-- Google Fonts: Plus Jakarta Sans, Instrument Serif & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap Icons for universal lightweight iconography -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Tailwind CSS v3 via Official CDN with PuntoÁgil Emerald & Slate Theme -->
+    <!-- Tailwind CSS v3 via Official CDN with PuntoÁgil Craftsman Warm Paper & Forest Pine Tonalities -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        slate: {
+                            50: '#F6F5F0',
+                            100: '#EFECE4',
+                            200: '#E2DFD5',
+                            300: '#CFCBC0',
+                            400: '#8C887E',
+                            500: '#635F56',
+                            600: '#47443D',
+                            700: '#2E2C27',
+                            800: '#1C1F21',
+                            900: '#111315',
+                            950: '#0A0C0D',
+                        },
+                        emerald: {
+                            50: '#EEF5F1',
+                            100: '#D6E8DF',
+                            200: '#B0D4C2',
+                            300: '#6EC29E',
+                            400: '#34B382',
+                            500: '#14533E',
+                            600: '#0F3D2E',
+                            700: '#0B2E22',
+                            800: '#09251B',
+                            900: '#071C15',
+                            950: '#04100C',
+                        },
                         brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            200: '#a7f3d0',
-                            500: '#10b981', /* Verde Esmeralda */
-                            600: '#059669', /* Verde Oscuro */
-                            700: '#047857',
-                            slate: '#0f172a', /* Azul Pizarra */
-                            card: '#1e293b',
-                            bg: '#f8fafc',
+                            50: '#EEF5F1',
+                            100: '#D6E8DF',
+                            200: '#B0D4C2',
+                            500: '#14533E',
+                            600: '#0F3D2E',
+                            700: '#0B2E22',
+                            forest: '#0F3D2E',
+                            ink: '#111315',
+                            paper: '#F6F5F0',
+                            slate: '#111315',
+                            card: '#1C1F21',
+                            bg: '#F6F5F0',
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+                        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
                     },
                     boxShadow: {
-                        'subtle': '0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px 0 rgba(15, 23, 42, 0.02)',
-                        'card': '0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.02)',
-                        'floating': '0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 10px 10px -5px rgba(15, 23, 42, 0.04)',
+                        'subtle': '0 1px 2px 0 rgba(17, 19, 21, 0.04)',
+                        'card': '0 4px 6px -1px rgba(17, 19, 21, 0.05), 0 2px 4px -1px rgba(17, 19, 21, 0.03)',
+                        'floating': '0 18px 28px -6px rgba(17, 19, 21, 0.09), 0 6px 10px -4px rgba(17, 19, 21, 0.04)',
                     }
                 }
             }
@@ -53,7 +83,33 @@
 
     <style>
         [x-cloak] { display: none !important; }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: #F6F5F0;
+            color: #111315;
+            -webkit-font-smoothing: antialiased;
+        }
+        .font-mono, .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        /* Tactile Cash Register Keycap (Micro-Interaction & Motion Craftsman) */
+        .pa-keycap {
+            border: 1px solid #D5D2C8;
+            border-bottom: 2px solid #B5B1A4;
+            transition: transform 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                        background-color 110ms ease,
+                        border-color 110ms ease;
+        }
+        .pa-keycap:active:not(:disabled) {
+            transform: translateY(1px);
+            border-bottom-width: 1px;
+        }
+        /* Thermal Receipt Serrated Tear Edge */
+        .pa-receipt-edge {
+            background-image: radial-gradient(circle at 6px 6px, #F6F5F0 4px, transparent 4.5px);
+            background-size: 12px 12px;
+            height: 8px;
+        }
 
         /* Cross-Document View Transitions & Compositor Motion (Modern Web Guidance) */
         @media (prefers-reduced-motion: no-preference) {
@@ -264,7 +320,7 @@
     </style>
     @yield('styles')
 </head>
-<body class="h-full antialiased text-slate-800 bg-[#f8fafc]" x-data="{ sidebarOpen: false, userDropdown: false, tenantDropdown: false }">
+<body class="h-full antialiased text-slate-800 bg-[#F6F5F0]" x-data="{ sidebarOpen: false, userDropdown: false, tenantDropdown: false }">
 
     <!-- Mobile Drawer Overlay -->
     <div x-show="sidebarOpen" 
@@ -279,13 +335,13 @@
     </div>
 
     <!-- Sidebar Layout -->
-    <aside class="vt-sidebar fixed inset-y-0 left-0 z-50 flex flex-col w-64 h-screen max-h-screen bg-[#0f172a] text-slate-300 transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-xl border-r border-slate-800"
+    <aside class="vt-sidebar fixed inset-y-0 left-0 z-50 flex flex-col w-64 h-screen max-h-screen bg-[#111315] text-slate-300 transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-xl border-r border-slate-800"
            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         
         <!-- Brand Header -->
-        <div class="flex-shrink-0 flex items-center justify-between h-16 px-6 bg-slate-950/40 border-b border-slate-800/80">
+        <div class="flex-shrink-0 flex items-center justify-between h-16 px-6 bg-slate-950/50 border-b border-slate-800/80">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group text-white">
-                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#14533E] to-[#0F3D2E] text-emerald-300 border border-emerald-400/25 shadow-lg shadow-black/30 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
                     <i class="bi bi-lightning-charge-fill text-xl"></i>
                 </div>
                 <div>

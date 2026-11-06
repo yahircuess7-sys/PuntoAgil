@@ -148,11 +148,11 @@
         </div>
     @endif
 
-    <!-- 4 KPI Metrics Grid -->
+    <!-- 4 KPI Metrics Grid (Original Layout with Warm Paper & Forest Pine Tonalities) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <!-- KPI 1: Ventas del Día -->
-        <div class="group saas-card-hover animate-fade-up stagger-1 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-subtle flex flex-col justify-between">
+        <div class="group saas-card-hover animate-fade-up stagger-1 p-4 rounded-2xl bg-[#FDFCF9] border border-slate-200/90 shadow-subtle flex flex-col justify-between">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Ventas Hoy</span>
                 <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
@@ -160,7 +160,7 @@
                 </div>
             </div>
             <div class="mt-3">
-                <h3 class="text-xl font-bold font-mono text-slate-900 tracking-tight">
+                <h3 class="text-xl font-bold font-mono tabular-nums text-slate-900 tracking-tight">
                     C$ {{ number_format($dailyTotal, 2) }}
                 </h3>
                 <p class="mt-1 text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
@@ -171,15 +171,15 @@
         </div>
 
         <!-- KPI 2: Ventas del Mes -->
-        <div class="group saas-card-hover animate-fade-up stagger-2 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-subtle flex flex-col justify-between">
+        <div class="group saas-card-hover animate-fade-up stagger-2 p-4 rounded-2xl bg-[#FDFCF9] border border-slate-200/90 shadow-subtle flex flex-col justify-between">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Facturación Mes</span>
-                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 text-slate-700 border border-slate-200">
                     <i class="bi bi-calendar3 text-base"></i>
                 </div>
             </div>
             <div class="mt-3">
-                <h3 class="text-xl font-bold font-mono text-slate-900 tracking-tight">
+                <h3 class="text-xl font-bold font-mono tabular-nums text-slate-900 tracking-tight">
                     C$ {{ number_format($monthlyTotal, 2) }}
                 </h3>
                 <p class="mt-1 text-[11px] text-slate-500 font-medium">
@@ -189,38 +189,38 @@
         </div>
 
         <!-- KPI 3: Ganancia Bruta Real del Mes -->
-        <div class="group saas-card-hover animate-fade-up stagger-3 p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white shadow-card flex flex-col justify-between">
+        <div class="group saas-card-hover animate-fade-up stagger-3 p-4 rounded-2xl bg-gradient-to-br from-[#0F3D2E] to-[#111315] text-white shadow-card flex flex-col justify-between">
             <div class="flex items-center justify-between">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">Utilidad Bruta Mes</span>
-                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 text-emerald-400">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Utilidad Bruta Mes</span>
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 text-emerald-300">
                     <i class="bi bi-graph-up-arrow text-base"></i>
                 </div>
             </div>
             <div class="mt-3">
-                <h3 class="text-xl font-black font-mono text-white tracking-tight">
+                <h3 class="text-xl font-black font-mono tabular-nums text-white tracking-tight">
                     C$ {{ number_format($monthlyGrossProfit, 2) }}
                 </h3>
-                <p class="mt-1 text-[10px] text-slate-400">
+                <p class="mt-1 text-[10px] text-emerald-100/80">
                     <span>Sobre costo real de mercancía</span>
                 </p>
             </div>
         </div>
 
         <!-- KPI 4: Stock Crítico / Alertas -->
-        <div class="group saas-card-hover animate-fade-up stagger-4 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-subtle flex flex-col justify-between">
+        <div class="group saas-card-hover animate-fade-up stagger-4 p-4 rounded-2xl bg-[#FDFCF9] border border-slate-200/90 shadow-subtle flex flex-col justify-between">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Alertas de Stock</span>
-                <div class="flex items-center justify-center w-9 h-9 rounded-xl {{ ($lowStockCount + $outOfStockCount) > 0 ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-slate-50 text-slate-400' }}">
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl {{ ($lowStockCount + $outOfStockCount) > 0 ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-400' }}">
                     <i class="bi bi-exclamation-triangle-fill text-base"></i>
                 </div>
             </div>
             <div class="mt-3">
-                <h3 class="text-xl font-bold font-mono {{ ($lowStockCount + $outOfStockCount) > 0 ? 'text-amber-600' : 'text-slate-900' }} tracking-tight">
+                <h3 class="text-xl font-bold font-mono tabular-nums {{ ($lowStockCount + $outOfStockCount) > 0 ? 'text-amber-700' : 'text-slate-900' }} tracking-tight">
                     {{ $lowStockCount + $outOfStockCount }}
                 </h3>
                 <p class="mt-1 text-[11px] font-semibold text-slate-600">
                     <span class="text-rose-600">{{ $outOfStockCount }} agotados</span>, 
-                    <span class="text-amber-600">{{ $lowStockCount }} en stock mínimo</span>
+                    <span class="text-amber-700">{{ $lowStockCount }} en stock mínimo</span>
                 </p>
             </div>
         </div>
